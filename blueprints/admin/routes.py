@@ -184,27 +184,22 @@ def add_teacher():
         db.session.add(teacher)
         db.session.commit()
 
-        # Kirim email via Gmail API
+        from utils.sendgrid_helper import send_login_email 
         try:
-            from utils.sendgrid_helper import send_email  # ganti gmail_helper
-            body = f"""
-        Halo {teacher.full_name},
+            response = send_login_email(
+                to_email=user.email,
+                name=teacher.full_name,
+                username=user.username,
+                password=password,
+                login_link=url_for('auth.login', _external=True)
+            )
 
-        Akun guru Anda telah dibuat:
-        Username: {user.username}
-        Password: {password}
-
-        Silakan login di {url_for('auth.login', _external=True)}
-        """
-            response = send_email(user.email, "Akun Guru Baru", body)
-            
             if 200 <= response['status_code'] < 300:
                 flash('Akun guru berhasil dibuat dan email terkirim!', 'success')
             else:
                 flash('Akun guru dibuat, tapi gagal kirim email', 'warning')
         except Exception as e:
             flash(f'Akun guru dibuat, tapi gagal kirim email: {str(e)}', 'warning')
-
             return redirect(url_for('admin.teachers'))
     
     return render_template('admin/add_teacher.html', form=form)
@@ -351,26 +346,27 @@ def add_student():
         db.session.commit()
 
         # Kirim email via Gmail API
+        from utils.sendgrid_helper import send_login_email  # helper Postmark
+
         try:
-            from utils.sendgrid_helper import send_email
-            body = f"""
-Halo {student.full_name},
+            response = send_login_email(
+                to_email=user.email,
+                name=student.full_name,
+                username=user.username,
+                password=password,
+                login_link=url_for('auth.login', _external=True)
+            )
 
-Akun siswa Anda telah dibuat:
-Username: {user.username}
-Password: {password}
+            if 200 <= response['status_code'] < 300:
+                flash('Akun siswa berhasil dibuat dan email terkirim!', 'success')
+            else:
+                flash('Akun siswa dibuat, tapi gagal kirim email', 'warning')
 
-Silakan login di {url_for('auth.login', _external=True)}
-"""
-            send_email(user.email, "Akun Siswa Baru", body)
         except Exception as e:
             flash(f'Akun siswa dibuat, tapi gagal kirim email: {str(e)}', 'warning')
-        else:
-            flash('Akun siswa berhasil dibuat dan email terkirim!', 'success')
 
         return redirect(url_for('admin.students'))
 
-    return render_template('admin/add_student.html', form=form)
 
 @admin_bp.route('/students/<int:student_id>/edit', methods=['GET', 'POST'])
 @require_admin
@@ -558,25 +554,28 @@ def import_students():
                 )
                 db.session.add(student)
 
+                from utils.sendgrid_helper import send_login_email  # helper Postmark
+
                 # Kirim email
                 try:
-                    from utils.sendgrid_helper import send_email
-                    body = f"""
-Halo {student.full_name},
+                    response = send_login_email(
+                        to_email=user.email,
+                        name=student.full_name,
+                        username=user.username,
+                        password=password,
+                        login_link=url_for('auth.login', _external=True)
+                    )
 
-Akun siswa Anda telah dibuat:
-Username: {user.username}
-Password: {password}
+                    if 200 <= response['status_code'] < 300:
+                        flash(f'Akun {student.full_name} berhasil dibuat dan email terkirim!', 'success')
+                    else:
+                        flash(f'Akun {student.full_name} dibuat, tapi gagal kirim email', 'warning')
 
-Silakan login di {url_for('auth.login', _external=True)}
-"""
-                    send_email(user.email, "Akun Siswa Baru", body)
                 except Exception as e:
                     # Gagal kirim email, tapi tetap hitung siswa berhasil
-                    flash(f'Akun {full_name} dibuat, tapi gagal kirim email: {str(e)}', 'warning')
+                    flash(f'Akun {student.full_name} dibuat, tapi gagal kirim email: {str(e)}', 'warning')
 
                 success_count += 1
-
             except Exception as e:
                 error_count += 1
                 continue

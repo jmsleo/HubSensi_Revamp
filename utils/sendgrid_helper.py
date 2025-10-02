@@ -1,38 +1,43 @@
-# sendgrid_helper.py
 import os
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
+from postmarker.core import PostmarkClient
 
-# Ambil API key dari environment variable
-SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
-FROM_EMAIL = os.environ.get('SENDGRID_FROM_EMAIL')  # misal: "no-reply@hubsensi.com"
+# Postmark
+POSTMARK_API_KEY = os.environ.get('POSTMARK_API_KEY')
+FROM_EMAIL = os.environ.get('POSTMARK_FROM_EMAIL')  # misal: "no-reply@hubsensi.com"
+TEMPLATE_ID = int(os.environ.get('POSTMARK_TEMPLATE_ID', 0))  # template Hubsensi Login Info
+LOGO_URL = os.environ.get('LOGO_URL')  # URL statis logo
 
-if not SENDGRID_API_KEY:
-    raise ValueError("Environment variable SENDGRID_API_KEY belum diset")
-if not FROM_EMAIL:
-    raise ValueError("Environment variable SENDGRID_FROM_EMAIL belum diset")
+if not POSTMARK_API_KEY or not FROM_EMAIL or TEMPLATE_ID == 0 or not LOGO_URL:
+    raise ValueError("Environment variable Postmark atau LOGO_URL belum lengkap")
 
-def send_email(to_email: str, subject: str, body: str) -> dict:
+postmark_client = PostmarkClient(server_token=POSTMARK_API_KEY)
+
+
+def send_login_email(to_email: str, name: str, username: str, password: str, login_link: str) -> dict:
     """
-    Mengirim email via SendGrid.
-    :param to_email: alamat penerima
-    :param subject: subject email
-    :param body: isi email (plain text)
-    :return: response dict dari SendGrid
+    Mengirim email login info menggunakan template Postmark dengan logo statis
     """
-    message = Mail(
-        from_email=FROM_EMAIL,
-        to_emails=to_email,
-        subject=subject,
-        plain_text_content=body
-    )
     try:
-        sg = SendGridAPIClient(SENDGRID_API_KEY)
-        response = sg.send(message)
-        return {
-            "status_code": response.status_code,
-            "body": response.body.decode() if hasattr(response.body, 'decode') else str(response.body),
-            "headers": dict(response.headers)
+        template_model = {
+            "name": name,
+            "username": username,
+            "password": password,
+            "login_link": login_link,
+            "logo_url": LOGO_URL
         }
+
+        resp = postmark_client.emails.send_with_template(
+            From=FROM_EMAIL,
+            To=to_email,
+            TemplateId=TEMPLATE_ID,
+            TemplateModel=template_model
+        )
+
+        return {
+            "status_code": 200 if resp.get('ErrorCode') == 0 else resp.get('ErrorCode'),
+            "body": resp,
+            "headers": {}
+        }
+
     except Exception as e:
-        raise RuntimeError(f"Gagal mengirim email: {e}")
+        raise RuntimeError(f"Gagal mengirim email login info: {e}")

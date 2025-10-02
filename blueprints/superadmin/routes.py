@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash
 from blueprints import admin
 from extensions import db
 from models import User, UserRole, School, Teacher, Student
-from utils.sendgrid_helper import send_email
+from utils.sendgrid_helper import send_login_email
 from . import superadmin_bp
 from .forms import AdminRegistrationForm, SchoolForm
 from ..auth.forms import RegistrationForm
@@ -53,67 +53,71 @@ def schools():
 )
 
 @superadmin_bp.route('/schools/add', methods=['GET', 'POST'])
-@login_required
 @require_superadmin
 def add_school():
-    # Pastikan hanya superadmin yang bisa mengakses
     if current_user.role != UserRole.SUPERADMIN:
         flash('Akses ditolak. Hanya Superadmin yang dapat menambahkan sekolah.', 'danger')
         return redirect(url_for('superadmin.dashboard'))
-    
-    form = SchoolForm()
-    admin_form = AdminRegistrationForm()  # Form khusus untuk admin sekolah
-    if form.validate_on_submit() and admin_form.validate():
-        # Cek apakah kode sekolah sudah ada
-        existing_school = School.query.filter_by(code=form.code.data).first()
-        if existing_school:
-            flash('Kode sekolah sudah digunakan. Silakan gunakan kode yang lain.', 'danger')
-            return render_template('superadmin/add_school.html', form=form, admin_form=admin_form)
+
+    form = SchoolForm(prefix='school')
+    admin_form = AdminRegistrationForm(prefix='admin')
+    if request.method == 'POST':
+        # Validasi kedua form secara terpisah
+        is_school_form_valid = form.validate()
+        is_admin_form_valid = admin_form.validate()
         
-        existing_school_name = School.query.filter_by(name=form.name.data).first()
-        if existing_school_name:
-            flash('Nama sekolah sudah digunakan. Silakan gunakan nama yang lain.', 'danger')
-            return render_template('superadmin/add_school.html', form=form, admin_form=admin_form)
-        
-        # Cek apakah username admin sudah ada
-        existing_admin = User.query.filter_by(username=admin_form.username.data).first()
-        if existing_admin:
-            flash('Username admin sudah digunakan. Silakan gunakan username yang lain.', 'danger')
-            return render_template('superadmin/add_school.html', form=form, admin_form=admin_form)
-        
-        existing_email = User.query.filter_by(email=admin_form.email.data).first()
-        if existing_email:
-            flash('Email sudah digunakan. Silahkan gunakan email lain.', 'danger')
-            return render_template('superadmin/add_school.html', form=form, admin_form=admin_form)
-        
-        # Buat sekolah baru
-        school = School(
-            name=form.name.data,
-            code=form.code.data,
-            address=form.address.data,
-            phone=form.phone.data,
-            email=form.email.data,
-            website=form.website.data,
-            is_active=True  # Sekolah aktif secara default
-        )
-        db.session.add(school)
-        db.session.flush()  # Mendapatkan ID sekolah tanpa commit
-        
-        # Buat admin user untuk sekolah
-        admin_user = User(
-            school_id=school.id,
-            username=admin_form.username.data,
-            email=admin_form.email.data,
-            role=UserRole.ADMIN
-        )
-        admin_user.set_password(admin_form.password.data)
-        db.session.add(admin_user)
-        
-        db.session.commit()
-        
-        flash('Sekolah dan admin berhasil ditambahkan!', 'success')
-        return redirect(url_for('superadmin.schools'))
-    
+        if is_school_form_valid and is_admin_form_valid:
+            # Cek duplikasi dengan data yang sudah pasti benar dari masing-masing form
+            existing_school = School.query.filter_by(code=form.code.data).first()
+            if existing_school:
+                flash('Kode sekolah sudah digunakan. Silakan gunakan kode yang lain.', 'danger')
+                return render_template('superadmin/add_school.html', form=form, admin_form=admin_form)
+
+            existing_school_name = School.query.filter_by(name=form.name.data).first()
+            if existing_school_name:
+                flash('Nama sekolah sudah digunakan. Silakan gunakan nama yang lain.', 'danger')
+                return render_template('superadmin/add_school.html', form=form, admin_form=admin_form)
+
+            existing_admin = User.query.filter_by(username=admin_form.username.data).first()
+            if existing_admin:
+                flash('Username admin sudah digunakan. Silakan gunakan username yang lain.', 'danger')
+                return render_template('superadmin/add_school.html', form=form, admin_form=admin_form)
+
+            existing_email = User.query.filter_by(email=admin_form.email.data).first()
+            if existing_email:
+                flash('Email sudah digunakan. Silahkan gunakan email lain.', 'danger')
+                return render_template('superadmin/add_school.html', form=form, admin_form=admin_form)
+
+            # Buat sekolah baru
+            school = School(
+                name=form.name.data,
+                code=form.code.data,
+                address=form.address.data,
+                phone=form.phone.data,
+                email=form.email.data, # Ambil dari form sekolah
+                website=form.website.data,
+                is_active=True
+            )
+            db.session.add(school)
+            db.session.flush()
+            print(admin_form.email.data)
+            print(form.email.data)
+            # Buat admin user untuk sekolah
+            admin_user = User(
+                school_id=school.id,
+                username=admin_form.username.data,
+                email=admin_form.email.data, # Ambil dari form admin
+                role=UserRole.ADMIN
+            )
+            admin_user.set_password(admin_form.password.data)
+            db.session.add(admin_user)
+
+            db.session.commit()
+
+            flash('Sekolah dan admin berhasil ditambahkan!', 'success')
+            return redirect(url_for('superadmin.schools'))
+
+    # Untuk request GET atau jika validasi gagal
     return render_template('superadmin/add_school.html', form=form, admin_form=admin_form)
 
 @superadmin_bp.route('/schools/<int:school_id>/edit', methods=['GET', 'POST'])
@@ -131,11 +135,14 @@ def edit_school(school_id):
         flash('Data sekolah berhasil diperbarui!', 'success')
         return redirect(url_for('superadmin.schools'))
 
-    return render_template('superadmin/edit_school.html',
-                       form=form,
-                       school=school,
-                       admin_form=admin_form,
-                       UserRole=UserRole)
+    return render_template(
+    'superadmin/edit_school.html',
+    form=form,
+    school=school,
+    admin_form=admin_form,
+    UserRole=UserRole
+)
+
 
 @superadmin_bp.route('/schools/<int:school_id>/delete', methods=['POST'])
 @require_superadmin
@@ -219,22 +226,20 @@ def reset_password(admin_id):
     db.session.commit()
 
     # Kirim email via SendGrid
-    subject = "Reset Password Akun Admin"
-    body = f"""
-Halo {admin.username},
-
-Password akun Anda telah direset oleh Superadmin.
-Berikut login terbaru Anda:
-
-Username: {admin.username}
-Password: {new_password}
-
-Silakan login dan segera ubah password Anda.
-"""
-
     try:
-        response = send_email(to_email=admin.email, subject=subject, body=body)
-        flash(f"Password berhasil direset dan dikirim ke email admin (status {response['status_code']}).", "success")
+        response = send_login_email(
+            to_email=admin.email,
+            name=admin.username,           # bisa ganti dengan admin.full_name jika ada
+            username=admin.username,
+            password=new_password,
+            login_link=url_for('auth.login', _external=True)
+        )
+
+        if 200 <= response['status_code'] < 300:
+            flash("Password berhasil direset dan dikirim ke email admin.", "success")
+        else:
+            flash("Password direset, tapi gagal mengirim email.", "warning")
+
     except Exception as e:
         flash(f"Gagal mengirim email: {str(e)}", "danger")
 

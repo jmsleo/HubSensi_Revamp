@@ -292,27 +292,32 @@
     
     // Add admin form submission
     document.getElementById('addAdminForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const formData = new FormData(this);
-        
-        fetch(this.action, {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Admin berhasil ditambahkan');
-                location.reload();
-            } else {
-                alert('Gagal menambahkan admin: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Terjadi kesalahan saat menambahkan admin');
-        });
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    formData.append('csrf_token', '{{ csrf_token() }}');  // CSRF token
+
+    console.log('FormData entries:');
+    for (let pair of formData.entries()) console.log(pair[0]+ ': '+ pair[1]);
+
+    fetch(this.action, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Admin berhasil ditambahkan');
+            location.reload();
+        } else {
+            alert('Gagal menambahkan admin: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Terjadi kesalahan saat menambahkan admin');
     });
+});
+
 </script>
 {% endblock %}
