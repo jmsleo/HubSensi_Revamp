@@ -302,7 +302,7 @@ def add_student():
             return render_template('admin/add_student.html', form=form)
         elif (email is None):
             flash (f"Email wajib di isi untuk mengirim username dan password siswa")
-
+            return render_template('admin/add_student.html', form=form)
         # Generate password
         password = secrets.token_urlsafe(8)
 
@@ -1016,7 +1016,9 @@ def delete_event(event_id):
 def settings():
     school = School.query.get(current_user.school_id)
     form = SchoolSettingsForm(obj=school)
-    
+    teacher_count = Teacher.query.filter_by(school_id=school.id).count()
+    student_count = Student.query.filter_by(school_id=school.id).count()
+    classroom_count = Classroom.query.filter_by(school_id=school.id).count()
     if form.validate_on_submit():
         form.populate_obj(school)
         db.session.commit()
@@ -1024,7 +1026,9 @@ def settings():
         flash('Pengaturan berhasil diperbarui!', 'success')
         return redirect(url_for('admin.settings'))
     
-    return render_template('admin/settings.html', form=form, school=school)
+    return render_template('admin/settings.html', form=form, school=school, teacher_count=teacher_count, 
+                           student_count=student_count, classroom_count=classroom_count
+                           )
 
 @admin_bp.route('/generate_qr')
 @require_admin
