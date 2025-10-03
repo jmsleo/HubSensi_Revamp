@@ -592,6 +592,78 @@ def import_students():
     
     return redirect(url_for('admin.students'))
 
+@admin_bp.route('/students/<int:student_id>/reset-password', methods=['POST'])
+@require_admin
+def reset_password(student_id):
+    student = User.query.get_or_404(student_id)
+    if student.role != UserRole.STUDENT:
+        flash("User bukan murid, tidak bisa reset password.", "danger")
+        return redirect(url_for('admin.students', school_id=student.school_id))
+
+    # Generate password random
+    import random, string
+    new_password = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+
+    # Update password (hash)
+    student.set_password(new_password)
+    db.session.commit()
+    from utils.sendgrid_helper import send_login_email
+    # Kirim email via SendGrid
+    try:
+        response = send_login_email(
+            to_email=student.email,
+            name=student.username,           # bisa ganti dengan admin.full_name jika ada
+            username=student.username,
+            password=new_password,
+            login_link=url_for('auth.login', _external=True)
+        )
+
+        if 200 <= response['status_code'] < 300:
+            flash("Password berhasil direset dan dikirim ke email siswa.", "success")
+        else:
+            flash("Password direset, tapi gagal mengirim email.", "warning")
+
+    except Exception as e:
+        flash(f"Gagal mengirim email: {str(e)}", "danger")
+
+    return redirect(url_for('admin.students', school_id=student.school_id))
+
+@admin_bp.route('/teachers/<int:teacher_id>/reset-password', methods=['POST'])
+@require_admin
+def reset_password_guru(teacher_id):
+    teacher = User.query.get_or_404(teacher_id)
+    if teacher.role != UserRole.TEACHER:  # Asumsi Anda memiliki role TEACHER
+        flash("User bukan guru.", "danger")
+        return redirect(url_for('admin.teachers'))
+
+    # Generate password random
+    import random, string
+    new_password = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+
+    # Update password (hash)
+    teacher.set_password(new_password)
+    db.session.commit()
+
+    # Kirim email via SendGrid
+    try:
+        from utils.sendgrid_helper import send_login_email
+        response = send_login_email(
+            to_email=teacher.email,
+            name=teacher.full_name,
+            username=teacher.username,
+            password=new_password,
+            login_link=url_for('auth.login', _external=True)
+        )
+
+        if 200 <= response['status_code'] < 300:
+            flash("Password berhasil direset dan dikirim ke email guru.", "success")
+        else:
+            flash("Password direset, tapi gagal mengirim email.", "warning")
+
+    except Exception as e:
+        flash(f"Gagal mengirim email: {str(e)}", "danger")
+
+    return redirect(url_for('admin.teachers'))
 
 @admin_bp.route('/students/<int:student_id>')
 @require_admin

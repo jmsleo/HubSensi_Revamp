@@ -113,6 +113,11 @@
                                    class="btn btn-outline-primary" title="Edit">
                                     <i class="bi bi-pencil"></i>
                                 </a>
+                                <button type="button" class="btn btn-outline-warning" 
+                                        title="Reset Password" 
+                                        onclick="confirmReset({{ teacher.id }}, '{{ teacher.full_name }}')">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </button>
                                 <button type="button" class="btn btn-outline-danger" 
                                         title="Hapus" onclick="confirmDelete({{ teacher.id }}, '{{ teacher.full_name }}')">
                                     <i class="bi bi-trash"></i>
@@ -166,7 +171,28 @@
         {% endif %}
     </div>
 </div>
-
+<!-- Reset Password Confirmation Modal -->
+<div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="resetPasswordModalLabel">Konfirmasi Reset Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Yakin reset password untuk <strong id="resetTeacherName"></strong>?</p>
+                <p class="text-warning">Password baru akan digenerate otomatis dan dikirim ke email guru.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <form id="resetPasswordForm" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-warning">Ya, Reset Password</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -225,7 +251,18 @@
         searchInput.addEventListener('keyup', filterTable);
         statusFilter.addEventListener('change', filterTable);
     });
+    // Reset confirmation
+    function confirmReset(teacherId, teacherName) {
+    const resetForm = document.getElementById('resetPasswordForm');
+    const resetTeacherName = document.getElementById('resetTeacherName');
 
+    resetTeacherName.textContent = teacherName;
+    resetForm.action = "{{ url_for('admin.reset_password_guru', teacher_id=0) }}".replace('0', teacherId);
+
+    const resetModalEl = document.getElementById('resetPasswordModal');
+    const modal = new bootstrap.Modal(resetModalEl);
+    modal.show();
+}
     // Delete confirmation
     function confirmDelete(teacherId, teacherName) {
     const deleteForm = document.getElementById('deleteForm');
