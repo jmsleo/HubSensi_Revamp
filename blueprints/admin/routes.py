@@ -300,9 +300,10 @@ def add_student():
         if existing_user:
             flash(f'Email {email} sudah digunakan!', 'danger')
             return render_template('admin/add_student.html', form=form)
-        elif (email is None):
-            flash (f"Email wajib di isi untuk mengirim username dan password siswa")
+        elif not email:
+            flash("Email wajib diisi untuk mengirim username dan password siswa", "danger")
             return render_template('admin/add_student.html', form=form)
+
         # Generate password
         password = secrets.token_urlsafe(8)
 
@@ -319,7 +320,9 @@ def add_student():
 
         # Generate QR code
         qr_data = f"STUDENT:{form.nis.data}:{current_user.school_id}"
-        qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=10, border=4)
+        qr = qrcode.QRCode(
+            version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=10, border=4
+        )
         qr.add_data(qr_data)
         qr.make(fit=True)
         img = qr.make_image(fill_color="black", back_color="white")
@@ -345,9 +348,8 @@ def add_student():
         db.session.add(student)
         db.session.commit()
 
-        # Kirim email via Gmail API
-        from utils.sendgrid_helper import send_login_email  # helper Postmark
-
+        # Kirim email via helper
+        from utils.sendgrid_helper import send_login_email
         try:
             response = send_login_email(
                 to_email=user.email,
@@ -356,16 +358,18 @@ def add_student():
                 password=password,
                 login_link=url_for('auth.login', _external=True)
             )
-
             if 200 <= response['status_code'] < 300:
                 flash('Akun siswa berhasil dibuat dan email terkirim!', 'success')
             else:
                 flash('Akun siswa dibuat, tapi gagal kirim email', 'warning')
-
         except Exception as e:
             flash(f'Akun siswa dibuat, tapi gagal kirim email: {str(e)}', 'warning')
 
         return redirect(url_for('admin.students'))
+
+    # ⬇️ tambahin ini biar GET/invalid form tetap return template
+    return render_template('admin/add_student.html', form=form)
+
 
 
 @admin_bp.route('/students/<int:student_id>/edit', methods=['GET', 'POST'])
