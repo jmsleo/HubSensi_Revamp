@@ -595,10 +595,11 @@ def import_students():
 @admin_bp.route('/students/<int:student_id>/reset-password', methods=['POST'])
 @require_admin
 def reset_password(student_id):
-    student = User.query.get_or_404(student_id)
+    student = User.query.get_or_404(id=student_id,
+        school_id=current_user.school_id)
     if student.role != UserRole.STUDENT:
         flash("User bukan murid, tidak bisa reset password.", "danger")
-        return redirect(url_for('admin.students', school_id=student.school_id))
+        return redirect(url_for('admin.students', school_id=current_user.school_id))
 
     # Generate password random
     import random, string
@@ -631,10 +632,11 @@ def reset_password(student_id):
 @admin_bp.route('/teachers/<int:teacher_id>/reset-password', methods=['POST'])
 @require_admin
 def reset_password_guru(teacher_id):
-    teacher = User.query.get_or_404(teacher_id)
+    teacher = User.query.get_or_404(id=teacher_id,
+        school_id=current_user.school_id)
     if teacher.role != UserRole.TEACHER:  # Asumsi Anda memiliki role TEACHER
         flash("User bukan guru.", "danger")
-        return redirect(url_for('admin.teachers'))
+        return redirect(url_for('admin.teachers', school_id = current_user.school_id))
 
     # Generate password random
     import random, string
