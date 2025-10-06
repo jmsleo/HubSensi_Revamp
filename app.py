@@ -1,6 +1,6 @@
 # app.py
 import os
-from flask import Flask, abort, flash, jsonify, redirect, render_template, request, url_for
+from flask import Flask, abort, flash, jsonify, redirect, render_template, request, url_for, send_from_directory,make_response, render_template_string
 from flask_login import current_user, logout_user
 from config import Config
 from extensions import db, login_manager, migrate, csrf
@@ -121,6 +121,32 @@ def create_app(config_class=Config):
                 return redirect(url_for('student.dashboard'))
         
         return render_template('index.html')
+    
+    @app.route('/robots.txt')
+    def static_from_root():
+        return send_from_directory(app.static_folder, request.path[1:])
+    
+    @app.route('/sitemap.xml')
+    def sitemap():
+        static_urls = [
+            {'loc': url_for('index', _external=True)},
+            {'loc': url_for('auth.login', _external=True)}
+        ]
+
+        xml_sitemap = render_template_string("""
+        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+        {% for url in urls %}
+            <url>
+                <loc>{{ url.loc }}</loc>
+            </url>
+        {% endfor %}
+        </urlset>
+        """, urls=static_urls)
+
+        response = make_response(xml_sitemap)
+        response.headers["Content-Type"] = "application/xml"
+
+        return response
     
     # Error handlers
     @app.errorhandler(404)

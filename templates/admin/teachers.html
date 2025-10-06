@@ -113,9 +113,9 @@
                                    class="btn btn-outline-primary" title="Edit">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <button type="button" class="btn btn-outline-warning" 
-                                        title="Reset Password" 
-                                        onclick="confirmReset({{ teacher.id }}, '{{ teacher.full_name }}')">
+                               <button type="button" class="btn btn-outline-warning"
+                                        title="Reset Password"
+                                        onclick="confirmReset({{ teacher.user.id }}, '{{ teacher.full_name }}')">
                                     <i class="bi bi-arrow-clockwise"></i>
                                 </button>
                                 <button type="button" class="btn btn-outline-danger" 

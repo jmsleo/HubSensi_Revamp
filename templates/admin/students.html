@@ -121,9 +121,9 @@
                                 <a href="{{ url_for('admin.generate_card', student_id=student.id) }}" class="btn btn-outline-info" title="Download Kartu">
                                     <i class="bi bi-card-heading"></i>
                                 </a>
-                                <button type="button" class="btn btn-outline-warning" 
-                                        title="Reset Password" 
-                                        onclick="confirmReset({{ student.id }}, '{{ student.full_name }}')">
+                                <button type="button" class="btn btn-outline-warning"
+                                        title="Reset Password"
+                                        onclick="confirmReset({{ student.user.id }}, '{{ student.full_name }}')">
                                     <i class="bi bi-arrow-clockwise"></i>
                                 </button>
                                 <button type="button" class="btn btn-outline-danger" 

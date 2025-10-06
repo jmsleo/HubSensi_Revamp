@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{{ brand_name|default('HubSensi') }}{% endblock %}</title>
+    <meta name="description" content="Hubsensi adalah sistem absensi sekolah online modern dengan QR Code. Kelola kehadiran siswa dan guru secara real-time, praktis, dan terintegrasi.">
+    <title>{% block title %}Hubsensi - Sistem Absensi Sekolah Online dengan QR Code{% endblock %}</title>
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -110,10 +111,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary position-relative">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('index') }}">
-                {% if logo_url %}
-                <img src="{{ logo_url }}" alt="{{ brand_name|default('HubSensi') }}" height="30" class="d-inline-block align-text-top me-2">
-                {% endif %}
-                {{ brand_name|default('HubSensi') }}
+                <img src="{{ url_for('static', filename='img/logo.png') }}" height="35" class="d-inline-block align-text-top me-2">
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -220,7 +218,7 @@
 
     <footer class="bg-light text-center py-4 mt-5" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;">
         <div class="container">
-            <p class="mb-0 text-muted">&copy; {{ now.year }} {{ brand_name|default('HubSensi') }}. All rights reserved.</p>
+            <p class="mb-0 text-muted">&copy; {{ now.year }} Hubsensi. All rights reserved.</p>
         </div>
     </footer>
 
