@@ -621,7 +621,7 @@ def reset_password_guru(teacher_id):
     try:
         send_login_email(
             to_email=teacher.email,
-            name=teacher.full_name,
+            name=teacher.username,
             username=teacher.username,
             password=new_password
         )
