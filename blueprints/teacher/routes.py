@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, current_user
 from models import AttendanceStatus, SchoolEvent, TeacherAttendance, User, UserRole, Teacher, Student, Classroom, Attendance, SchoolQRCode, jakarta_now
-from extensions import db
+from extensions import db,cache
 from . import teacher_bp
 from .forms import AttendanceForm
 import re
@@ -14,6 +14,7 @@ def require_teacher():
         return redirect(url_for('auth.login'))
 
 @teacher_bp.route('/dashboard')
+@cache.cached(timeout=600)
 def dashboard():
     teacher = Teacher.query.filter_by(user_id=current_user.id).first()
     

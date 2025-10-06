@@ -3,9 +3,10 @@ import os
 from flask import Flask, abort, flash, jsonify, redirect, render_template, request, url_for, send_from_directory,make_response, render_template_string
 from flask_login import current_user, logout_user
 from config import Config
-from extensions import db, login_manager, migrate, csrf
+from extensions import db, login_manager, migrate, csrf, cache
 from models import User, UserRole, jakarta_now
 from blueprints import init_app as init_blueprints
+from celery_worker import init_celery
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -16,7 +17,8 @@ def create_app(config_class=Config):
     login_manager.init_app(app)
     migrate.init_app(app, db)
     csrf.init_app(app)
-    
+    cache.init_app(app)
+    init_celery(app)
     # Initialize blueprints
     init_blueprints(app)
     

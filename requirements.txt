@@ -28,3 +28,6 @@ openpyxl
 requests==2.31.0
 postmark
 postmarker
+celery
+redis
+Flask-Caching

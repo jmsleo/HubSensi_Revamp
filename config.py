@@ -21,6 +21,8 @@ class Config:
             'options': '-c timezone=Asia/Jakarta'
         }
     }
+    CACHE_TYPE = os.environ.get('CACHE_TYPE') or 'SimpleCache'
+    CACHE_REDIS_URL = os.environ.get('CACHE_REDIS_URL') or 'redis://localhost:6379/0'
     
     # Session config
     PERMANENT_SESSION_LIFETIME = timedelta(hours=8)

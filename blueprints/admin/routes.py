@@ -11,12 +11,13 @@ import base64
 from datetime import date, timedelta
 from models import EventType, TeacherAttendance, User, UserRole, School, Teacher, Student, Classroom, SchoolEvent, SchoolQRCode, Attendance, jakarta_now
 import io
-from extensions import db
+from extensions import db, cache
 from . import admin_bp
 from .forms import TeacherForm, StudentForm, ClassroomForm, EventForm, SchoolSettingsForm
 import pandas as pd
 from utils.s3_helper import *
 from utils.card_generator import generate_student_card
+from tasks import send_email_task
 from flask import send_file
 import io
 
@@ -31,6 +32,7 @@ def require_admin(f):
     return decorated_function
 
 @admin_bp.route('/dashboard')
+@cache.cached(timeout=600)
 @require_admin
 def dashboard():
     teacher_count = Teacher.query.filter_by(school_id=current_user.school_id).count()
@@ -184,23 +186,18 @@ def add_teacher():
         db.session.add(teacher)
         db.session.commit()
 
-        from utils.sendgrid_helper import send_login_email 
         try:
-            response = send_login_email(
+            send_email_task.delay(
                 to_email=user.email,
                 name=teacher.full_name,
                 username=user.username,
-                password=password,
-                login_link=url_for('auth.login', _external=True)
+                password=password
             )
-
-            if 200 <= response['status_code'] < 300:
-                flash('Akun guru berhasil dibuat dan email terkirim!', 'success')
-            else:
-                flash('Akun guru dibuat, tapi gagal kirim email', 'warning')
+            flash('Akun guru berhasil dibuat dan email terkirim!', 'success')
         except Exception as e:
-            flash(f'Akun guru dibuat, tapi gagal kirim email: {str(e)}', 'warning')
-            return redirect(url_for('admin.teachers'))
+            flash(f'Akun guru dibuat, tapi gagal memasukkan tugas pengiriman email: {str(e)}', 'warning')
+        
+        return redirect(url_for('admin.teachers'))
     
     return render_template('admin/add_teacher.html', form=form)
 
@@ -349,19 +346,14 @@ def add_student():
         db.session.commit()
 
         # Kirim email via helper
-        from utils.sendgrid_helper import send_login_email
         try:
-            response = send_login_email(
+            send_email_task.delay(
                 to_email=user.email,
                 name=student.full_name,
                 username=user.username,
-                password=password,
-                login_link=url_for('auth.login', _external=True)
+                password=password
             )
-            if 200 <= response['status_code'] < 300:
-                flash('Akun siswa berhasil dibuat dan email terkirim!', 'success')
-            else:
-                flash('Akun siswa dibuat, tapi gagal kirim email', 'warning')
+            flash('Akun siswa berhasil dibuat dan email terkirim!', 'success')
         except Exception as e:
             flash(f'Akun siswa dibuat, tapi gagal kirim email: {str(e)}', 'warning')
 
@@ -500,14 +492,12 @@ def import_students():
                 nisn = str(row['nisn']).strip() if 'nisn' in df.columns and pd.notna(row['nisn']) else None
 
                 # Cek NIS unik
-                existing_student = Student.query.filter_by(nis=nis, school_id=current_user.school_id).first()
-                if existing_student:
+                if Student.query.filter_by(nis=nis, school_id=current_user.school_id).first():
                     error_count += 1
                     continue
                 
                 # Cek email unik
-                existing_user = User.query.filter_by(email=email).first()
-                if existing_user:
+                if User.query.filter_by(email=email).first():
                     error_count += 1
                     continue
 
@@ -523,7 +513,7 @@ def import_students():
                 )
                 user.set_password(password)
                 db.session.add(user)
-                db.session.flush()  # agar user.id tersedia
+                db.session.flush()
 
                 # Generate QR code
                 qr = qrcode.QRCode(
@@ -537,7 +527,6 @@ def import_students():
                 qr.make(fit=True)
                 img = qr.make_image(fill_color="black", back_color="white")
 
-                # Simpan QR ke BytesIO
                 qr_bytes = BytesIO()
                 img.save(qr_bytes, format='PNG')
                 qr_bytes.seek(0)
@@ -558,37 +547,30 @@ def import_students():
                 )
                 db.session.add(student)
 
-                from utils.sendgrid_helper import send_login_email  # helper Postmark
-
-                # Kirim email
+                # Kirim email menggunakan Celery task
                 try:
-                    response = send_login_email(
+                    send_email_task.delay(
                         to_email=user.email,
                         name=student.full_name,
                         username=user.username,
-                        password=password,
-                        login_link=url_for('auth.login', _external=True)
+                        password=password
                     )
-
-                    if 200 <= response['status_code'] < 300:
-                        flash(f'Akun {student.full_name} berhasil dibuat dan email terkirim!', 'success')
-                    else:
-                        flash(f'Akun {student.full_name} dibuat, tapi gagal kirim email', 'warning')
-
                 except Exception as e:
-                    # Gagal kirim email, tapi tetap hitung siswa berhasil
-                    flash(f'Akun {student.full_name} dibuat, tapi gagal kirim email: {str(e)}', 'warning')
+                    flash(f'Akun {student.full_name} dibuat, tapi gagal menambahkan tugas pengiriman email: {str(e)}', 'warning')
 
                 success_count += 1
+
             except Exception as e:
+                db.session.rollback() # Batalkan transaksi untuk siswa yang gagal
                 error_count += 1
+                print(f"Gagal mengimpor siswa dengan NIS {row.get('nis', 'N/A')}: {str(e)}") # Logging error ke konsol server
                 continue
         
         db.session.commit()
-        flash(f'Import selesai: {success_count} siswa berhasil, {error_count} gagal', 'success')
+        flash(f'Import selesai: {success_count} siswa berhasil, {error_count} gagal.', 'success')
 
     except Exception as e:
-        flash(f'Error memproses file: {str(e)}', 'danger')
+        flash(f'Terjadi error saat memproses file: {str(e)}', 'danger')
     
     return redirect(url_for('admin.students'))
 
@@ -607,22 +589,14 @@ def reset_password(student_id):
     # Update password (hash)
     student.set_password(new_password)
     db.session.commit()
-    from utils.sendgrid_helper import send_login_email
-    # Kirim email via SendGrid
     try:
-        response = send_login_email(
+        send_email_task.delay(
             to_email=student.email,
-            name=student.username,           # bisa ganti dengan admin.full_name jika ada
+            name=student.username,
             username=student.username,
-            password=new_password,
-            login_link=url_for('auth.login', _external=True)
+            password=new_password
         )
-
-        if 200 <= response['status_code'] < 300:
-            flash("Password berhasil direset dan dikirim ke email siswa.", "success")
-        else:
-            flash("Password direset, tapi gagal mengirim email.", "warning")
-
+        flash("Password berhasil direset dan dikirim ke email siswa.", "success")
     except Exception as e:
         flash(f"Gagal mengirim email: {str(e)}", "danger")
 
@@ -643,23 +617,14 @@ def reset_password_guru(teacher_id):
     # Update password (hash)
     teacher.set_password(new_password)
     db.session.commit()
-
-    # Kirim email via SendGrid
     try:
-        from utils.sendgrid_helper import send_login_email
-        response = send_login_email(
+        send_email_task.delay(
             to_email=teacher.email,
             name=teacher.full_name,
             username=teacher.username,
-            password=new_password,
-            login_link=url_for('auth.login', _external=True)
+            password=new_password
         )
-
-        if 200 <= response['status_code'] < 300:
-            flash("Password berhasil direset dan dikirim ke email guru.", "success")
-        else:
-            flash("Password direset, tapi gagal mengirim email.", "warning")
-
+        flash("Password berhasil direset dan dikirim ke email guru.", "success")
     except Exception as e:
         flash(f"Gagal mengirim email: {str(e)}", "danger")
 

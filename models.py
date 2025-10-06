@@ -42,17 +42,17 @@ class School(BaseModel):
     __tablename__ = 'schools'
     
     name = db.Column(db.String(100), nullable=False)
-    code = db.Column(db.String(20), unique=True, nullable=False)
+    code = db.Column(db.String(20), unique=True, nullable=False, index=True) # <-- Index ditambahkan
     address = db.Column(db.Text)
     phone = db.Column(db.String(20))
     email = db.Column(db.String(100))
     website = db.Column(db.String(100))
-    is_active = db.Column(db.Boolean, default=True)
+    is_active = db.Column(db.Boolean, default=True, index=True) # <-- Index ditambahkan
     
     # Pengaturan branding sekolah
     brand_name = db.Column(db.String(100))
-    primary_color = db.Column(db.String(7), default='#0d6efd')  # Bootstrap primary
-    secondary_color = db.Column(db.String(7), default='#6c757d')  # Bootstrap secondary
+    primary_color = db.Column(db.String(7), default='#0d6efd')
+    secondary_color = db.Column(db.String(7), default='#6c757d')
     logo_url = db.Column(db.String(200))
     
     # Relationship
@@ -64,11 +64,11 @@ class School(BaseModel):
 class User(BaseModel, UserMixin):
     __tablename__ = 'users'
     
-    school_id = db.Column(db.Integer, db.ForeignKey('schools.id'), nullable=True)  # Nullable untuk superadmin
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128))
-    role = db.Column(db.Enum(UserRole), nullable=False)
+    school_id = db.Column(db.Integer, db.ForeignKey('schools.id'), nullable=True, index=True) # <-- Index ditambahkan
+    username = db.Column(db.String(80), unique=True, nullable=False, index=True) # <-- Index ditambahkan
+    email = db.Column(db.String(120), unique=True, nullable=False, index=True) # <-- Index ditambahkan
+    password_hash = db.Column(db.Text)
+    role = db.Column(db.Enum(UserRole), nullable=False, index=True) # <-- Index ditambahkan
     is_active = db.Column(db.Boolean, default=True)
     last_login = db.Column(db.DateTime)
     
@@ -92,39 +92,39 @@ class User(BaseModel, UserMixin):
 class Teacher(BaseModel):
     __tablename__ = 'teachers'
     
-    school_id = db.Column(db.Integer, db.ForeignKey('schools.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    nip = db.Column(db.String(20))  # Teacher ID
+    school_id = db.Column(db.Integer, db.ForeignKey('schools.id'), nullable=False, index=True) # <-- Index ditambahkan
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True) # <-- Index ditambahkan
+    nip = db.Column(db.String(20), index=True) # <-- Index ditambahkan
     full_name = db.Column(db.String(100), nullable=False)
     is_homeroom = db.Column(db.Boolean, default=False)
     
     # Relationship
     homeroom_class = db.relationship('Classroom', backref='homeroom_teacher', uselist=False)
-    recorded_attendances = db.relationship('Attendance', backref='teacher', lazy=True,  cascade="all, delete-orphan")
+    recorded_attendances = db.relationship('Attendance', backref='teacher', lazy=True, cascade="all, delete-orphan")
 
 # Model untuk siswa
 class Student(BaseModel):
     __tablename__ = 'students'
     
-    school_id = db.Column(db.Integer, db.ForeignKey('schools.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    nis = db.Column(db.String(20), nullable=False)  # Student ID
-    nisn = db.Column(db.String(20))  # National Student ID
+    school_id = db.Column(db.Integer, db.ForeignKey('schools.id'), nullable=False, index=True) # <-- Index ditambahkan
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True) # <-- Index ditambahkan
+    nis = db.Column(db.String(20), nullable=False, index=True) # <-- Index ditambahkan
+    nisn = db.Column(db.String(20), index=True) # <-- Index ditambahkan
     full_name = db.Column(db.String(100), nullable=False)
-    classroom_id = db.Column(db.Integer, db.ForeignKey('classrooms.id'))
-    qr_code = db.Column(db.String(100), unique=True)  # Path to QR code image
+    classroom_id = db.Column(db.Integer, db.ForeignKey('classrooms.id'), index=True) # <-- Index ditambahkan
+    qr_code = db.Column(db.String(100), unique=True)
     
     # Relationship
-    attendance_records = db.relationship('Attendance', backref='student', lazy=True,  cascade="all, delete-orphan")
+    attendance_records = db.relationship('Attendance', backref='student', lazy=True, cascade="all, delete-orphan")
 
 # Model untuk kelas
 class Classroom(BaseModel):
     __tablename__ = 'classrooms'
     
-    school_id = db.Column(db.Integer, db.ForeignKey('schools.id'), nullable=False)
+    school_id = db.Column(db.Integer, db.ForeignKey('schools.id'), nullable=False, index=True) # <-- Index ditambahkan
     name = db.Column(db.String(50), nullable=False)
     grade_level = db.Column(db.String(20))
-    homeroom_teacher_id = db.Column(db.Integer, db.ForeignKey('teachers.id'))
+    homeroom_teacher_id = db.Column(db.Integer, db.ForeignKey('teachers.id'), index=True) # <-- Index ditambahkan
     
     # Relationship
     students = db.relationship('Student', backref='classroom', lazy=True)
@@ -134,10 +134,10 @@ class Classroom(BaseModel):
 class Attendance(BaseModel):
     __tablename__ = 'attendances'
     
-    school_id = db.Column(db.Integer, db.ForeignKey('schools.id'), nullable=False)
-    student_id = db.Column(db.Integer, db.ForeignKey('students.id'), nullable=False)
-    classroom_id = db.Column(db.Integer, db.ForeignKey('classrooms.id'), nullable=False)
-    date = db.Column(db.Date, nullable=False)
+    school_id = db.Column(db.Integer, db.ForeignKey('schools.id'), nullable=False, index=True) # <-- Index ditambahkan
+    student_id = db.Column(db.Integer, db.ForeignKey('students.id'), nullable=False, index=True) # <-- Index ditambahkan
+    classroom_id = db.Column(db.Integer, db.ForeignKey('classrooms.id'), nullable=False, index=True) # <-- Index ditambahkan
+    date = db.Column(db.Date, nullable=False, index=True) # <-- Index ditambahkan
     status = db.Column(db.Enum(AttendanceStatus), nullable=False)
     recorded_by = db.Column(db.Integer, db.ForeignKey('teachers.id'))
     notes = db.Column(db.Text)
@@ -146,11 +146,11 @@ class Attendance(BaseModel):
 class SchoolEvent(BaseModel):
     __tablename__ = 'school_events'
     
-    school_id = db.Column(db.Integer, db.ForeignKey('schools.id'), nullable=False)
+    school_id = db.Column(db.Integer, db.ForeignKey('schools.id'), nullable=False, index=True) # <-- Index ditambahkan
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text)
-    start_date = db.Column(db.DateTime, nullable=False)
-    end_date = db.Column(db.DateTime, nullable=False)
+    start_date = db.Column(db.DateTime, nullable=False, index=True) # <-- Index ditambahkan
+    end_date = db.Column(db.DateTime, nullable=False, index=True) # <-- Index ditambahkan
     event_type = db.Column(db.Enum(EventType), nullable=False)
     is_holiday = db.Column(db.Boolean, default=False)
 
@@ -159,16 +159,16 @@ class SchoolQRCode(BaseModel):
     __tablename__ = 'school_qr_codes'
     
     school_id = db.Column(db.Integer, db.ForeignKey('schools.id'), nullable=False, unique=True)
-    qr_code = db.Column(db.String(100), unique=True)  # Path to QR code image
+    qr_code = db.Column(db.String(100), unique=True)
     is_active = db.Column(db.Boolean, default=True)
 
 # Model untuk absensi guru
 class TeacherAttendance(BaseModel):
     __tablename__ = 'teacher_attendances'
     
-    school_id = db.Column(db.Integer, db.ForeignKey('schools.id'), nullable=False)
-    teacher_id = db.Column(db.Integer, db.ForeignKey('teachers.id'), nullable=False)
-    date = db.Column(db.Date, nullable=False)
+    school_id = db.Column(db.Integer, db.ForeignKey('schools.id'), nullable=False, index=True) # <-- Index ditambahkan
+    teacher_id = db.Column(db.Integer, db.ForeignKey('teachers.id'), nullable=False, index=True) # <-- Index ditambahkan
+    date = db.Column(db.Date, nullable=False, index=True) # <-- Index ditambahkan
     time_in = db.Column(db.DateTime)
     time_out = db.Column(db.DateTime)
     status = db.Column(db.Enum(AttendanceStatus), nullable=False, default=AttendanceStatus.HADIR)
@@ -187,12 +187,12 @@ class SchoolSubscription(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     school_id = db.Column(db.Integer, db.ForeignKey('schools.id'), nullable=False, unique=True)
     plan = db.Column(db.Enum(SubscriptionPlan), nullable=False, default=SubscriptionPlan.BASIC)
-    is_active = db.Column(db.Boolean, default=True)
-    start_date = db.Column(db.Date, nullable=False)
-    end_date = db.Column(db.Date, nullable=False)
+    is_active = db.Column(db.Boolean, default=True, index=True) # <-- Index ditambahkan
+    start_date = db.Column(db.Date, nullable=False, index=True) # <-- Index ditambahkan
+    end_date = db.Column(db.Date, nullable=False, index=True) # <-- Index ditambahkan
     max_teachers = db.Column(db.Integer, default=5)
     max_students = db.Column(db.Integer, default=100)
-    features = db.Column(db.JSON, default=dict)  # Fitur khusus berdasarkan plan
+    features = db.Column(db.JSON, default=dict)
     
     # Relationship
     school = db.relationship('School', backref=db.backref('subscription', uselist=False))
