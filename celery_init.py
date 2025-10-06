@@ -1,21 +1,17 @@
 # celery_init.py
 import logging
-from factory import create_app
+import os
 from celery_worker import celery
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Simplified initialization tanpa Flask context untuk menghindari crash loop
 try:
-    # Buat instance aplikasi Flask hanya untuk memberikan konteks ke Celery
-    logger.info("Creating Flask app for Celery context...")
-    flask_app = create_app()
-
-    # Dorong konteks aplikasi agar tersedia untuk worker
-    flask_app.app_context().push()
-    logger.info("Flask app context pushed successfully")
+    logger.info("Celery worker initialized without Flask context to prevent crashes")
+    logger.info("Flask context akan dibuat per-task jika diperlukan")
     
 except Exception as e:
-    logger.error(f"Failed to initialize Celery with Flask context: {e}")
+    logger.error(f"Failed to initialize Celery: {e}")
     raise

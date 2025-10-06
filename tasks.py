@@ -13,11 +13,10 @@ def send_email_task(self, to_email: str, name: str, username: str, password: str
     Dengan retry mechanism dan proper error handling.
     """
     try:
-        # Jika login_link tidak disediakan, buat default
+        # Jika login_link tidak disediakan, buat default URL
         if not login_link:
-            from flask import current_app, url_for
-            with current_app.app_context():
-                login_link = url_for('auth.login', _external=True)
+            # Gunakan hardcoded URL untuk menghindari Flask context issue
+            login_link = "https://www.hubsensi.com/auth/login"  # Ganti dengan domain Anda
         
         logger.info(f"Mengirim email ke {to_email} untuk user {name}")
         
