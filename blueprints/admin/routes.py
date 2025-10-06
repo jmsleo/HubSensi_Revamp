@@ -19,6 +19,7 @@ from utils.s3_helper import *
 from utils.card_generator import generate_student_card
 from tasks import send_email_task
 from flask import send_file
+from utils.sendgrid_helper import send_login_email
 import io
 
 def require_admin(f):
@@ -187,7 +188,7 @@ def add_teacher():
         db.session.commit()
 
         try:
-            send_email_task.delay(
+            send_login_email(
                 to_email=user.email,
                 name=teacher.full_name,
                 username=user.username,
@@ -347,7 +348,7 @@ def add_student():
 
         # Kirim email via helper
         try:
-            send_email_task.delay(
+            send_login_email(
                 to_email=user.email,
                 name=student.full_name,
                 username=user.username,
@@ -549,7 +550,7 @@ def import_students():
 
                 # Kirim email menggunakan Celery task
                 try:
-                    send_email_task.delay(
+                    send_login_email(
                         to_email=user.email,
                         name=student.full_name,
                         username=user.username,
@@ -590,7 +591,7 @@ def reset_password(student_id):
     student.set_password(new_password)
     db.session.commit()
     try:
-        send_email_task.delay(
+        send_login_email(
             to_email=student.email,
             name=student.username,
             username=student.username,
@@ -618,7 +619,7 @@ def reset_password_guru(teacher_id):
     teacher.set_password(new_password)
     db.session.commit()
     try:
-        send_email_task.delay(
+        send_login_email(
             to_email=teacher.email,
             name=teacher.full_name,
             username=teacher.username,
