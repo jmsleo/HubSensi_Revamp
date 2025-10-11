@@ -3,13 +3,47 @@
 
 {% block title %}Login - Hubsensi{% endblock %}
 
+{% block navbar %}
+{# Blok ini sengaja dikosongkan untuk menghilangkan navbar di halaman login #}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Kunci untuk menghilangkan scrollbar */
+    html, body {
+        height: 100%;
+        overflow: hidden; /* Mencegah scrolling */
+        margin: 0;        /* Menghapus margin bawaan */
+        padding: 0;       /* Menghapus padding bawaan */
+    }
+
+    body {
+        background-image: url("{{ url_for('static', filename='img/login.jpg') }}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+    .card.shadow {
+        background-color: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(5px);
+    }
+    footer {
+        display: none;
+    }
+    main {
+        padding: 0 !important;
+        height: 100%; /* Pastikan main juga mengisi tinggi layar */
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
+<div class="container-fluid d-flex justify-content-center align-items-center" style="height: 100vh;">
     <div class="col-md-6 col-lg-4">
         <div class="card shadow">
             <div class="card-body p-5">
                 <div class="text-center mb-4">
-                    <h2 class="card-title">Login Hubsensi</h2>
+                    <img src="{{ url_for('static', filename='img/logo-login2.png') }}" alt="Hubsensi Logo" class="img-fluid mb-3" style="max-height: 45px;">
                     <p class="text-muted">Sistem Absensi Multi-Sekolah</p>
                 </div>
                 
@@ -23,6 +57,12 @@
                         <button type="submit" class="btn btn-primary btn-lg">Login</button>
                     </div>
                 </form>
+
+                <div class="d-grid mt-3">
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-1"></i> Kembali ke Beranda
+                    </a>
+                </div>
                 
                 <div class="text-center mt-4">
                     <p class="small text-muted">

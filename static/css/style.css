@@ -287,11 +287,20 @@ body {
 }
 
 .badge.bg-info {
-    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%) !important;
+    background: var(--gradient-primary) !important;
 }
 
+.badge.bg-sakit{
+    background: #64abfc
+}
 .badge.bg-primary {
     background: var(--gradient-primary) !important;
+}
+.badge.bg-danger{
+    background: #fc6464 !important;
+}
+.badge.bg-warning {
+    background: #fde143 !important;
 }
 
 /* List Group Styling */

@@ -231,8 +231,7 @@ def reset_password(admin_id):
             to_email=admin.email,
             name=admin.username,           # bisa ganti dengan admin.full_name jika ada
             username=admin.username,
-            password=new_password,
-            login_link=url_for('auth.login', _external=True)
+            password=new_password
         )
 
         if 200 <= response['status_code'] < 300:

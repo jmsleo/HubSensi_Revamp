@@ -6,16 +6,11 @@
     <meta name="description" content="Hubsensi adalah sistem absensi sekolah online modern dengan QR Code. Kelola kehadiran siswa dan guru secara real-time, praktis, dan terintegrasi.">
     <title>{% block title %}Hubsensi - Sistem Absensi Sekolah Online dengan QR Code{% endblock %}</title>
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
-    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <!-- FullCalendar CSS -->
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Custom CSS -->
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
     {% block extra_css %}{% endblock %}
     
@@ -107,9 +102,9 @@
     </style>
 </head>
 <body>
-    <!-- Multi-role navbar -->
+    {% block navbar %}
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary position-relative">
-        <div class="container">
+        <div class="container-fluid">
             <a class="navbar-brand" href="{{ url_for('index') }}">
                 <img src="{{ url_for('static', filename='img/logo-putih.png') }}" height="35" class="d-inline-block align-text-top me-2">
             </a>
@@ -200,8 +195,9 @@
             </div>
         </div>
     </nav>
+    {% endblock %}
 
-    <main class="container py-4">
+    <main class="container-fluid py-4">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -217,18 +213,16 @@
     </main>
 
     <footer class="bg-light text-center py-4 mt-5" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;">
-        <div class="container">
+        <div class="container-fluid">
             <p class="mb-0 text-muted">&copy; {{ now.year }} Hubsensi. All rights reserved.</p>
         </div>
     </footer>
 
-    <!-- JavaScript Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/id.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     
-    <!-- Custom JS -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     {% block extra_js %}{% endblock %}
 </body>
