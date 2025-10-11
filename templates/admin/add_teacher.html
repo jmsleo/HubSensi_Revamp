@@ -99,6 +99,10 @@
                         <div class="form-text">Nomor Induk Pegawai</div>
                     </div>
                 </div>
+                <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                {{ form.email(class="form-control", placeholder="Email guru") }}
+            </div>
             </div>
             
             <div class="d-flex gap-2">
@@ -110,10 +114,7 @@
                 </a>
             </div>
 
-            <div class="mb-3">
-                <label for="email" class="form-label">Email (Opsional)</label>
-                {{ form.email(class="form-control", placeholder="Email guru") }}
-            </div>
+            
         </form>
     </div>
 </div>
