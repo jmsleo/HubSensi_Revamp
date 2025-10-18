@@ -16,29 +16,33 @@
     
     <style>
         :root {
-            --primary-color: #22c55e;
-            --primary-color-rgb: 34, 197, 94;
-            --secondary-color: #16a34a;
+            --primary-color: #0AAB8E;
+            --secondary-color: #137e7e;
         }
         
         .bg-primary {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+            background: var(--primary-color) !important;
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+            background: var(--primary-color) !important;
             border: none !important;
         }
         
+        .btn-primary:hover {
+            background: var(--secondary-color) !important;
+            border: none !important;
+        }
+
         .btn-outline-primary {
             color: var(--primary-color) !important;
             border-color: var(--primary-color) !important;
         }
         
         .btn-outline-primary:hover {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+            background: var(--secondary-color) !important;
             color: white !important;
-            border-color: var(--primary-color) !important;
+            border-color: var(--secondary-color) !important;
         }
         
         .text-primary {
@@ -77,9 +81,9 @@
         }
 
         .alert-success {
-            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
-            color: #16a34a;
-            border-left: 4px solid #22c55e;
+            background: var(--primary-color);
+            color: white;
+            border-left: 4px solid var(--primary-color);
         }
 
         .alert-danger {
@@ -109,7 +113,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <a class="navbar-brand" href="{{ url_for('index') }}">
-                <img src="{{ url_for('static', filename='img/logo-putih.png') }}" height="35" class="d-inline-block align-text-top me-2">
+                <img src="{{ url_for('static', filename='img/logo-full-putih.png') }}" height="35" class="d-inline-block align-text-top me-2">
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">

@@ -14,9 +14,9 @@
         :root {
             --primary-green-dark: #015240;
             --primary-green: #00684B;
-            --secondary-green: #0A9B73;
+            --secondary-green: #0AAB8E;
             --accent-lime: #d4ff00;
-            --text-dark: #003C2B;
+            --text-dark: #075656;
             --text-light: #555;
             --bg-light: #FFFFFF;
             --border-color: #E0E0E0;
@@ -36,7 +36,7 @@
             font-family: 'Poppins', sans-serif;
             margin: 0;
             color: var(--text-dark);
-            background: linear-gradient(135deg, var(--primary-green-dark) 0%, var(--primary-green) 30%, #a8e063 85%, var(--accent-lime) 100%);
+            background: #0AAB8E;
             background-attachment: fixed;
             overflow-x: hidden;
             line-height: 1.6;
@@ -50,10 +50,13 @@
         }
 
         .container-head {
-            max-width: 1200px;
+            width: 100%;
             margin: 0 auto;
             padding: 0 20px;
-            margin-bottom: 5px
+            margin-bottom: 5px;
+            background-color: white;
+            position: sticky;
+            color: #075656;
         }
 
 
@@ -71,12 +74,13 @@
 
         /* Header */
         header {
-            padding: 20px 0;
-            background-color: rgba(255, 255, 255, 0.05);
+            padding: 10px 0;
+            background-color: white;
             backdrop-filter: blur(8px);
             top: 0;
             z-index: 1000;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
         }
         
         nav {
@@ -86,7 +90,7 @@
         }
 
         .logo img {
-            height: 60px;
+            height: 35px;
             width: auto;
             display: block;
         }
@@ -95,18 +99,19 @@
             background-color: transparent;
             border: 1px solid var(--bg-light);
             color: var(--bg-light);
-            padding: 10px 24px;
+            padding: 5px 24px;
             border-radius: 20px;
             cursor: pointer;
             font-weight: 600;
             font-family: 'Poppins', sans-serif;
             transition: all 0.3s ease;
             font-size: 16px;
+            color: var(--text-dark);
         }
 
         .login-btn:hover {
-            background-color: var(--bg-light);
-            color: var(--primary-green);
+            background-color: #0AAB8E;
+            color: var(--bg-light);
         }
 
         /* Hero Section */
@@ -155,7 +160,7 @@
 
         .hero-btn {
             background-color: var(--bg-light);
-            color: var(--primary-green);
+            color: var(--text-dark);
             padding: 14px 36px;
             border-radius: 30px;
             border: none;
@@ -179,7 +184,7 @@
         .content-wrapper {
             background-color: var(--bg-light);
             border-radius: 40px 40px 0 0;
-            padding-top: 1px;
+            padding-top: 60px;
             margin-top: -30px;
             position: relative;
         }
@@ -189,7 +194,7 @@
             font-size: 36px;
             margin-bottom: 20px;
             font-weight: 700;
-            color: var(--text-dark);
+            color: #075656;
         }
 
         .section-subtitle {
@@ -486,7 +491,7 @@
         }
 
         .plan-btn:hover {
-            background-color: var(--primary-green);
+            background-color: #258271;
             color: #fff;
             border-color: var(--primary-green);
         }
@@ -498,7 +503,7 @@
         }
 
         .plan-btn-prime:hover {
-            background-color: var(--primary-green);
+            background-color: #258271;
             border-color: var(--primary-green);
         }
 
@@ -550,7 +555,7 @@
 
         /* Footer */
         footer {
-            background-color: #00281D;
+            background-color: #075656;
             color: #A0B5AF;
             padding: 60px 0 30px;
             text-align: center;
@@ -832,7 +837,7 @@
         <div class="container-head">
             <nav>
                 <div class="logo">
-                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Hubsensi Logo">
+                    <img src="{{ url_for('static', filename='img/logo-hitam.png') }}" alt="Hubsensi Logo">
                 </div>
                 <button class="login-btn" onclick="window.location.href='{{ url_for('auth.login')}}'">Login</button>
             </nav>
@@ -967,21 +972,21 @@
                 <div class="steps">
                     <div class="step">
                         <div class="step-icon">
-                            <img src="{{ url_for('static', filename='img/icon-chart.svg') }}" alt="Ikon Analisis">
+                            <img src="{{ url_for('static', filename='img/icon-chart.png') }}" alt="Ikon Analisis">
                         </div>
                         <h3>1. Atur Jadwal & Divisi</h3>
                         <p>Atur jadwal masuk, jam pelajaran, dan divisi atau kelas yang berlaku di sekolah Anda.</p>
                     </div>
                     <div class="step">
                         <div class="step-icon">
-                            <img src="{{ url_for('static', filename='img/icon-calendar.svg') }}"  alt="Ikon Kalender">
+                            <img src="{{ url_for('static', filename='img/icon-calendar.png') }}"  alt="Ikon Kalender">
                         </div>
                         <h3>2. Daftarkan Pengguna</h3>
                         <p>Daftarkan seluruh siswa, guru, dan staf. Atur peran dan kelas masing-masing pengguna.</p>
                     </div>
                     <div class="step">
                         <div class="step-icon">
-                            <img src="{{ url_for('static', filename='img/icon-sync.svg') }}"  alt="Ikon Sinkronisasi">
+                            <img src="{{ url_for('static', filename='img/icon-sync.png') }}"  alt="Ikon Sinkronisasi">
                         </div>
                         <h3>3. Siap Digunakan</h3>
                         <p>Sekolah Anda siap menjalankan absensi digital. Pantau kehadiran secara real-time.</p>

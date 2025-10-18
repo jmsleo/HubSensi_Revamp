@@ -2,11 +2,11 @@
 
 /* CSS Variables for consistent theming */
 :root {
-    --primary-green: #22c55e;
-    --primary-green-light: #4ade80;
-    --primary-green-dark: #16a34a;
-    --secondary-green: #dcfce7;
-    --accent-green: #bbf7d0;
+    --primary-green: #0AAB8E;
+    --primary-green-light: #0aab8e28;
+    --primary-green-dark: #137e7e;
+    --secondary-green: #D9F7F1;
+    --accent-green: #A6EADF;
     --white: #ffffff;
     --off-white: #fafafa;
     --light-gray: #f8fafc;
@@ -32,7 +32,7 @@ body {
 
 /* Navbar Styling */
 .navbar {
-    background: var(--gradient-primary) !important;
+    background: var(--primary-green) !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: var(--shadow-sm);
     backdrop-filter: blur(10px);
@@ -83,13 +83,13 @@ body {
     left: 0;
     width: 0;
     height: 100%;
-    background: var(--gradient-primary);
+    background: var(--primary-green);
     transition: width 0.3s ease;
     z-index: -1;
 }
 
 .sidebar .nav-link.active {
-    background: var(--gradient-primary);
+    background: var(--primary-green);
     color: var(--white);
     box-shadow: var(--shadow-md);
     transform: translateX(4px);
@@ -126,7 +126,7 @@ body {
 }
 
 .card-header {
-    background: var(--gradient-secondary);
+    background: var(--primary-green-light);
     border-bottom: 1px solid var(--border-light);
     border-radius: 16px 16px 0 0 !important;
     padding: 1.25rem 1.5rem;
@@ -144,12 +144,12 @@ body {
 
 /* Statistics Cards */
 .card.bg-primary {
-    background: var(--gradient-primary) !important;
+    background: var(--primary-green) !important;
     border: none;
 }
 
 .card.bg-success {
-    background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-dark) 100%) !important;
+    background: var(--primary-green) !important;
     border: none;
 }
 
@@ -190,13 +190,12 @@ body {
 }
 
 .btn-primary {
-    background: var(--gradient-primary);
+    background: var(--primary-green-dark);
     color: var(--white);
-    box-shadow: var(--shadow-sm);
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, var(--primary-green-dark) 0%, var(--primary-green) 100%);
+    background: var(--primary-green-dark);
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
 }
@@ -208,14 +207,13 @@ body {
 }
 
 .btn-outline-primary:hover {
-    background: var(--gradient-primary);
+    background: var(--primary-green);
     color: var(--white);
     transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
 }
 
 .btn-success {
-    background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-dark) 100%);
+    background: var(--primary-green);
     color: var(--white);
 }
 
@@ -228,7 +226,7 @@ body {
 /* Form Styling */
 .form-control,
 .form-select {
-    border: 2px solid var(--border-light);
+    border: 1px solid var(--primary-green);
     border-radius: 10px;
     padding: 0.75rem 1rem;
     transition: all 0.3s ease;
@@ -254,13 +252,14 @@ body {
     border-radius: 12px;
     overflow: hidden;
     box-shadow: var(--shadow-sm);
+    border-collapse: collapse ;
 }
 
 .table th {
     border-top: none;
     font-weight: 600;
     color: var(--text-primary);
-    background: var(--gradient-secondary);
+    background: var(--primary-green-lighti);
     padding: 1rem;
 }
 
@@ -283,18 +282,19 @@ body {
 }
 
 .badge.bg-success {
-    background: var(--gradient-primary) !important;
+    background: var(--primary-green) !important;
+    color: var(--white);
 }
 
 .badge.bg-info {
-    background: var(--gradient-primary) !important;
+    background: var(--primary-green-dark) !important;
 }
 
 .badge.bg-sakit{
     background: #64abfc
 }
 .badge.bg-primary {
-    background: var(--gradient-primary) !important;
+    background: var(--primary-green) !important;
 }
 .badge.bg-danger{
     background: #fc6464 !important;
@@ -360,17 +360,29 @@ body {
 .fc .fc-toolbar-title {
     font-size: 1.25rem;
     font-weight: 600;
-    color: var(--text-primary);
+    color: var(--primary-green-dark);
 }
 
 .fc .fc-button-primary {
-    background: var(--gradient-primary);
+    background: var(--primary-green);
     border: none;
     border-radius: 8px;
 }
 
 .fc .fc-button-primary:hover {
-    background: linear-gradient(135deg, var(--primary-green-dark) 0%, var(--primary-green) 100%);
+    background: var(--primary-green-dark);
+}
+
+/* Style tombol aktif (bulan/minggu/hari yang sedang dipilih) */
+.fc .fc-button-primary.fc-button-active {
+    background: var(--primary-green-dark) !important;
+    border: none !important;
+    color: #fff !important;
+}
+
+/* (Opsional) Jika ingin hover pada tombol aktif tetap konsisten */
+.fc .fc-button-primary.fc-button-active:hover {
+    background: var(--primary-green-dark) !important;
 }
 
 /* Error Pages */
@@ -517,7 +529,7 @@ body {
 .btn:focus,
 .form-control:focus,
 .form-select:focus {
-    outline: 2px solid var(--primary-green);
+    outline: 1px solid var(--primary-green);
     outline-offset: 2px;
 }
 
@@ -550,4 +562,114 @@ body {
 /* Smooth Transitions */
 * {
     transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Extra btn custom */
+.btn-outline-warning{
+    color: #d97706;
+    border: #f59e0b;
+}
+
+.btn-outline-danger{
+    color: #dc2626;
+    border: #ef4444;
+}
+
+.btn-group .btn:nth-child(2) {
+    border-radius: 0px 8px 8px 0px !important;
+}
+
+.btn-group-2 .btn:nth-child(2) {
+    border-radius: 8px 0px 0px 8px !important;
+}
+
+.btn-group-2 .btn:nth-child(3) {
+    border-radius: 0px 8px 8px 0px !important;
+}
+
+.btn-group-2 {
+    border-radius: 0 !important;
+
+}
+
+.btn-text-hover:hover {
+    font-weight: 600;
+    transform: scale(1.05);
+    box-shadow: none !important;
+    background: transparent !important;
+    color: inherit !important;
+}
+
+.btn-text-hover:focus,
+.btn-text-hover:active,
+.btn-text-hover:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
+}
+
+/* ---------- Reset dasar untuk seluruh tombol dalam .btn-group-3 ---------- */
+.btn-group-3 .btn {
+    background: transparent !important;   /* tidak ada background */
+    border: none !important;              /* sembunyikan border default */
+    box-shadow: none !important;          /* sembunyikan shadow default */
+    outline: none !important;
+    position: relative;                   /* diperlukan agar z-index bekerja */
+    color: inherit !important;            /* jangan paksa warna hitam */
+}
+
+/* ---------- Hover: tampilkan outline (menggunakan box-shadow agar tidak mengubah layout) ---------- */
+.btn-group-3 .btn:hover,
+.btn-group-3 .btn:focus {           /* fokus juga menampilkan outline agar aksesibilitas tetap jelas */
+    background: transparent !important;
+    color: inherit !important;      /* warna teks tetap sama */
+    box-shadow: 0 0 0 2px currentColor !important; /* outline mengikuti warna teks */
+    border-radius: 8px !important;  /* radius di semua sudut */
+    z-index: 2 !important;          /* agar outline muncul di atas tombol tetangga */
+    transform: none !important;     /* hindari transform yg bisa memengaruhi layout */
+}
+
+.btn-group-3 .btn.btn-outline-primary {
+    color: var(--primary-green) !important;
+}
+.btn-group-3 .btn.btn-outline-warning {
+    color: #ffc107 !important;
+}
+.btn-group-3 .btn.btn-outline-danger {
+    color: #dc3545 !important;
+}
+.btn-group-3 .btn.btn-outline-info {
+    color: #0891b2 !important;
+}
+
+/* ------------ PAGE NATION -----------------*/
+/* Hilangkan semua gaya default Bootstrap */
+.pagination .page-link {
+    background: none !important;
+    border: none !important;
+    color: var(--primary-green) !important;   /* Warna hijau sesuai keinginan */
+    box-shadow: none !important;
+    padding: 6px 10px;  /* Bisa disesuaikan */
+    font-weight: 500;
+}
+
+/* Saat aktif (halaman saat ini) */
+.pagination .page-item.active .page-link {
+    background: none !important;
+    border: none !important;
+    color: var(--primary-green-dark) !important;   /* Bisa hijau lebih gelap agar terlihat aktif */
+    font-weight: 700;
+    pointer-events: none;
+}
+
+/* Hilangkan hover default bootstrap */
+.pagination .page-link:hover {
+    background: none !important;
+    border: none !important;
+    color: var(--primary-green-dark) !important; /* warna hijau sedikit lebih terang */
+}
+
+/* Hilangkan focus outline */
+.pagination .page-link:focus {
+    box-shadow: none !important;
 }

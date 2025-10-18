@@ -22,7 +22,7 @@
 </li>
 <li class="nav-item">
     <a class="nav-link" href="{{ url_for('admin.classrooms') }}">
-        <i class="bi bi-house-door me-2"></i>
+        <i class="bi bi-door-open me-2"></i>
         Kelas
     </a>
 </li>
@@ -51,8 +51,10 @@
     </a>
 </li>
 {% endblock %}
+
+{% block page_title %}Kalender Event{% endblock %}
+
 {% block page_content %}
-<h3>Kalender Event</h3>
 
 <div id="calendar"></div>
 

@@ -23,7 +23,7 @@
 </li>
 <li class="nav-item">
     <a class="nav-link" href="{{ url_for('admin.classrooms') }}">
-        <i class="bi bi-house-door me-2"></i>
+        <i class="bi bi-door-open me-2"></i>
         Kelas
     </a>
 </li>
@@ -63,7 +63,7 @@
     <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#importModal">
         <i class="bi bi-upload me-1"></i> Import Excel
     </button>
-    <a href="{{ url_for('admin.download_template') }}" class="btn btn-outline-secondary btn-sm">
+    <a href="{{ url_for('admin.download_template') }}" class="btn btn-text-hover btn-sm">
         <i class="bi bi-download me-1"></i> Template
     </a>
 </div>
@@ -113,9 +113,9 @@
                         </td>
                         <td>{{ student.created_at.strftime('%d/%m/%Y') }}</td>
                         <td>
-                            <div class="btn-group btn-group-sm">
+                            <div class="btn-group-3 btn-group-sm">
                                 <a href="{{ url_for('admin.view_student', student_id=student.id) }}" 
-                                   class="btn btn-outline-info" title="Lihat Detail">
+                                   class="btn btn-outline-primary" title="Lihat Detail">
                                     <i class="bi bi-eye"></i>
                                 </a>
                                 <a href="{{ url_for('admin.generate_card', student_id=student.id) }}" class="btn btn-outline-info" title="Download Kartu">
