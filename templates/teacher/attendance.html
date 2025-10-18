@@ -6,13 +6,13 @@
 {% block sidebar_nav %}
 <li class="nav-item">
     <a class="nav-link" href="{{ url_for('teacher.dashboard') }}">
-        <i class="bi bi-speedometer2 me-2"></i>
+        <i class="bi bi-grid-fill me-2"></i>
         Dashboard
     </a>
 </li>
 <li class="nav-item">
     <a class="nav-link active" href="{{ url_for('teacher.attendance') }}">
-        <i class="bi bi-clipboard-check me-2"></i>
+        <i class="bi bi-clipboard-check-fill me-2"></i>
         Absensi Siswa
     </a>
 </li>
@@ -24,7 +24,7 @@
 </li>
 <li class="nav-item">
     <a class="nav-link" href="{{ url_for('teacher.my_attendance') }}">
-        <i class="bi bi-person-check me-2"></i>
+        <i class="bi bi-person-check-fill me-2"></i>
         Absensi Saya
     </a>
 </li>
@@ -146,7 +146,7 @@
         </form>
         {% else %}
         <div class="text-center py-5">
-            <i class="bi bi-people text-muted fs-1 d-block mb-3"></i>
+            <i class="bi bi-people-fill text-muted fs-1 d-block mb-3"></i>
             <p class="text-muted">Tidak ada siswa ditemukan</p>
             <a href="{{ url_for('teacher.attendance') }}" class="btn btn-primary">
                 <i class="bi bi-arrow-clockwise me-1"></i> Muat Ulang

@@ -5,12 +5,12 @@
 {% block sidebar_nav %}
 <li class="nav-item">
     <a class="nav-link" href="{{ url_for('teacher.dashboard') }}">
-        <i class="bi bi-speedometer2 me-2"></i> Dashboard
+        <i class="bi bi-grid-fill me-2"></i> Dashboard
     </a>
 </li>
 <li class="nav-item">
     <a class="nav-link" href="{{ url_for('teacher.attendance') }}">
-        <i class="bi bi-clipboard-check me-2"></i> Absensi Siswa
+        <i class="bi bi-clipboard-check-fill me-2"></i> Absensi Siswa
     </a>
 </li>
 <li class="nav-item">
@@ -20,7 +20,7 @@
 </li>
 <li class="nav-item">
     <a class="nav-link" href="{{ url_for('teacher.my_attendance') }}">
-        <i class="bi bi-person-check me-2"></i> Absensi Saya
+        <i class="bi bi-person-check-fill me-2"></i> Absensi Saya
     </a>
 </li>
 <li class="nav-item">
@@ -40,7 +40,7 @@
 {% block page_actions %}
 <div class="btn-group">
     <a href="{{ url_for('teacher.attendance') }}" class="btn btn-sm btn-outline-primary">
-        <i class="bi bi-clipboard-check me-1"></i> Input Manual
+        <i class="bi bi-clipboard-check-fill me-1"></i> Input Manual
     </a>
     <button id="manual-input-btn" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#manualInputModal">
         <i class="bi bi-keyboard me-1"></i> Input QR Manual
